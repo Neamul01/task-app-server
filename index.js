@@ -43,6 +43,19 @@ async function run() {
         const result = await todoList.updateOne(filter, updatedDoc)
         res.send(result)
     })
+    app.put('/updatedTask/:id', async (req, res) => {
+        const id = req.params.id;
+        const updatedTask = req.body.updatedTask;
+        console.log(id, updatedTask)
+        const filter = { _id: ObjectId(id) };
+        const updatedDoc = {
+            $set: {
+                inputValue: updatedTask
+            }
+        }
+        const result = await todoList.updateOne(filter, updatedDoc);
+        res.send(result)
+    })
 }
 run().catch(console.dir)
 
