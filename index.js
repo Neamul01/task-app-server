@@ -8,7 +8,11 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+app.get('/', (req, res) => {
+    res.send('Hello task app...')
+})
+
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://task-app:${process.env.DB_PASS}@cluster0.aeyhn.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -26,12 +30,21 @@ async function run() {
         const result = await todoList.insertOne(doc);
         res.send(result)
     })
+    app.put('/tasks/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) }
+        console.log(filter)
+        // options = { upsert: true };
+        const updatedDoc = {
+            $set: {
+                'completed': true
+            }
+        }
+        const result = await todoList.updateOne(filter, updatedDoc)
+        res.send(result)
+    })
 }
 run().catch(console.dir)
-
-app.get('/', (req, res) => {
-    res.send('Hello task app...')
-})
 
 app.listen(port, () => {
     console.log(`task app running on port ${port}`)
